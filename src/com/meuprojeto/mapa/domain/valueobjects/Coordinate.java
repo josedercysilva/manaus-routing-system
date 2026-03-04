@@ -1,52 +1,51 @@
 package com.meuprojeto.mapa.domain.valueobjects;
 
-public class Coordinate{
-
-	/**
-	 * Ao usar final garantimos a imutabilidade.
-	 */
-	/**
-	 * Uma otimização simples, pois coordenadas não mudam de lugar.
-	 */
+/**
+ * Representa uma coordenada geográfica imutável (Latitude e Longitude).
+ * Utilizada como base espacial para todos os elementos do mapa de Manaus.
+ * 
+ * @author José Dercy Vieira da Silva Filho
+ * 
+ * @version 1.0
+ */
+public class Coordinate {
 
 	private final double latitude;
 	private final double longitude;
 
+	/**
+	 * Cria uma nova coordenada geográfica com validação de limites globais.
+	 * 
+	 * @param latitude  Valor em graus decimais (entre -90.0 e 90.0).
+	 * 
+	 * @param longitude Valor em graus decimais (entre -180.0 e 180.0).
+	 * @throws IllegalArgumentException Se as coordenadas estiverem fora dos limites
+	 *                                  da Terra.
+	 */
 	public Coordinate(double latitude, double longitude) {
-		/**
-		 * Validação de Domínio. Impede que o sistema aceite coordenadas que não existem
-		 * no planeta Terra.
-		 */
-
 		if (latitude < -90.0 || latitude > 90.0) {
-			throw new IllegalArgumentException("Erro: Latitude deve estar entre -90 e 90. Valor recebido: " + latitude);
+			throw new IllegalArgumentException("Latitude inválida: " + latitude);
 		}
 		if (longitude < -180.0 || longitude > 180.0) {
-			throw new IllegalArgumentException(
-					"Erro: Longitude deve estar entre -180 e 180. Valor recebido: " + longitude);
+			throw new IllegalArgumentException("Longitude inválida: " + longitude);
 		}
 
 		this.latitude = latitude;
 		this.longitude = longitude;
 	}
 
-	public double getLatitude() {
-		return latitude;
-	}
-
-	public double getLongitude() {
-		return longitude;
-	}
-
 	/**
-	 * Calcula a distância em linha reta (em metros) até outra coordenada. Utiliza a
-	 * Fórmula de Haversine para considerar a curvatura da Terra.
+	 * Calcula a distância em linha reta entre esta coordenada e outra. Utiliza a
+	 * fórmula de Haversine para compensar a curvatura da Terra, garantindo precisão
+	 * essencial para o algoritmo de Dijkstra, por exemplo.
+	 * 
+	 * @param other A coordenada de destino.
+	 * 
+	 * @return A distância real em metros.
 	 */
 	public double distanceTo(Coordinate other) {
-		
-		
-		final int EARTH_RADIUS_METERS = 6371000; // Raio da Terra (média de 6,371 Km)
 
+		final int EARTH_RADIUS_METERS = 6371000;
 		double latDistance = Math.toRadians(other.latitude - this.latitude);
 		double lonDistance = Math.toRadians(other.longitude - this.longitude);
 
